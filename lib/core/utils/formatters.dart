@@ -16,6 +16,17 @@ abstract final class Fmt {
     return (isWhole ? _whole : _decimal).format(value);
   }
 
+  /// Number for an input box, no commas: `620` → `620`, `620.5` → `620.5`,
+  /// `null` → empty.
+  static String plain(num? value) {
+    if (value == null) return '';
+    if (value == value.roundToDouble()) return value.toInt().toString();
+    return value
+        .toStringAsFixed(2)
+        .replaceFirst(RegExp(r'0+$'), '')
+        .replaceFirst(RegExp(r'\.$'), '');
+  }
+
   /// `63925` → `৳63,925`, `-500` → `-৳500`, `null` → `৳—`.
   static String money(num? value, {String empty = '$taka—'}) {
     if (value == null) return empty;

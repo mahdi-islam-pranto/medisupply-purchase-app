@@ -97,7 +97,9 @@ Each feature folder has `data/` (models + repository), `providers/` and `present
 
 **Check:** app launches in green, tabs switch.
 
-## Phase 2 — Sign in & session (Screen 1)
+## Phase 2 — Sign in & session (Screen 1) ✅ Done
+
+> Notes: the debug "Preview app" button is gone. The last phone/email used is remembered (never the PIN). Profile has a temporary Log out button until Phase 7.
 
 - Sign-in screen: logo, "Store Quote", phone/email field, 6-digit PIN field (hidden, show/hide toggle), Sign in button, info card "Quotes are accepted only during your daily quote window."
 - `POST /login` → save `store_key` + store info.
@@ -107,7 +109,9 @@ Each feature folder has `data/` (models + repository), `providers/` and `present
 
 **Check:** sign in with a real store, close and reopen the app and stay signed in.
 
-## Phase 3 — Home (Screen 2)
+## Phase 3 — Home (Screen 2) ✅ Done
+
+> Notes: the "Last quote" card opens History for now; Phase 5 points it at Approved quotes for that date.
 
 - `GET /home`, pull-to-refresh.
 - Header: "Store name · date_label", title "Home".
@@ -119,7 +123,9 @@ Each feature folder has `data/` (models + repository), `providers/` and `present
 
 **Check:** numbers match the admin panel; countdown ticks.
 
-## Phase 4 — Products to quote (Screens 3 & 4)
+## Phase 4 — Products to quote (Screens 3 & 4) ✅ Done
+
+> Notes: search filters today's list on the phone (instant, and typed prices are never lost) instead of calling `?q=`. Typed prices survive tab switches. Each Send sends every filled line; emptied lines are sent as 0/0 to remove them.
 
 The main screen of the app.
 

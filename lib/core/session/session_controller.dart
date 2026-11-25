@@ -76,14 +76,4 @@ class SessionController extends Notifier<SessionState> {
     state = SessionState.signedOut(expired: expired);
     await _storage.clear();
   }
-
-  /// Phase 1 only: lets us browse the tab screens before sign-in exists.
-  /// Nothing is saved. Removed in Phase 2.
-  void debugPreview() {
-    assert(kDebugMode);
-    state = const SessionState.signedIn(
-      'debug-preview',
-      StoreInfo(name: 'Preview Store', phone: '01XXXXXXXXX'),
-    );
-  }
 }

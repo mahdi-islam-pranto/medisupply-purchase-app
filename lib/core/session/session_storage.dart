@@ -27,6 +27,7 @@ class SessionStorage {
 
   static const _keyStoreKey = 'store_key';
   static const _keyStoreInfo = 'store_info';
+  static const _keyLastLogin = 'last_login';
 
   Future<StoredSession?> read() async {
     try {
@@ -59,6 +60,25 @@ class SessionStorage {
   Future<void> saveStore(StoreInfo store) =>
       _storage.write(key: _keyStoreInfo, value: jsonEncode(store.toJson()));
 
+  /// The phone/email last used to sign in. Kept after logout so the
+  /// sign-in form can be pre-filled; the PIN is never stored.
+  Future<String?> readLastLogin() async {
+    try {
+      return await _storage.read(key: _keyLastLogin);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> saveLastLogin(String login) async {
+    try {
+      await _storage.write(key: _keyLastLogin, value: login);
+    } catch (e) {
+      debugPrint('SessionStorage.saveLastLogin failed: $e');
+    }
+  }
+
+  /// Signs out: removes the key and store info (not the last login).
   Future<void> clear() async {
     try {
       await _storage.delete(key: _keyStoreKey);

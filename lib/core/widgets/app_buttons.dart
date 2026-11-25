@@ -10,6 +10,7 @@ class PrimaryButton extends StatelessWidget {
     required this.onPressed,
     this.loading = false,
     this.icon,
+    this.height,
   });
 
   final String label;
@@ -17,10 +18,16 @@ class PrimaryButton extends StatelessWidget {
   final bool loading;
   final IconData? icon;
 
+  /// Defaults to the theme height (54).
+  final double? height;
+
   @override
   Widget build(BuildContext context) {
     return FilledButton(
       onPressed: loading ? null : onPressed,
+      style: height == null
+          ? null
+          : FilledButton.styleFrom(minimumSize: Size.fromHeight(height!)),
       child: _ButtonContent(
         label: label,
         icon: icon,
