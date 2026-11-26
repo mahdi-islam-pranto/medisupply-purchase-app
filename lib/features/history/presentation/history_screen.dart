@@ -4,10 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/models/quote_summary.dart';
 import '../../../core/network/api_exception.dart';
-import '../../../core/session/session_controller.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
-import '../../../core/utils/pdf_launcher.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/load_more_footer.dart';
 import '../../../core/widgets/screen_header.dart';
@@ -16,7 +14,6 @@ import '../../../core/widgets/snackbars.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../../core/widgets/status_badge.dart';
 import '../../../router/routes.dart';
-import '../../approved/data/approved_repository.dart';
 import '../providers/history_provider.dart';
 
 /// Screen 6 — Quote history.
@@ -33,8 +30,6 @@ class HistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(historyProvider);
-    final storeName = ref.watch(sessionProvider.select((s) => s.store?.name));
-
     ref.listen(historyProvider, (prev, next) {
       if (next.hasError && next.hasValue && !next.isLoading) {
         showAppSnackBar(context, errorMessage(next.error!), error: true);
@@ -43,7 +38,6 @@ class HistoryScreen extends ConsumerWidget {
 
     final header = ScreenHeader(
       title: 'Quote history',
-      subtitle: storeName,
       trailing: TextButton.icon(
         onPressed: () => context.go(Routes.approvedRange),
         icon: const Icon(Icons.date_range_rounded, size: 20),
@@ -88,10 +82,6 @@ class HistoryScreen extends ConsumerWidget {
                 child: _HistoryCard(
                   quote: q,
                   onTap: () => context.go(Routes.approvedFor(q.date)),
-                  onPdf: () => openPdf(
-                    context,
-                    ref.read(approvedRepositoryProvider).pdfUrl(q.date),
-                  ),
                 ),
               );
             },
@@ -120,15 +110,10 @@ class HistoryScreen extends ConsumerWidget {
 }
 
 class _HistoryCard extends StatelessWidget {
-  const _HistoryCard({
-    required this.quote,
-    required this.onTap,
-    required this.onPdf,
-  });
+  const _HistoryCard({required this.quote, required this.onTap});
 
   final QuoteSummary quote;
   final VoidCallback onTap;
-  final VoidCallback onPdf;
 
   @override
   Widget build(BuildContext context) {
@@ -155,26 +140,12 @@ class _HistoryCard extends StatelessWidget {
               ],
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: StatusBadge.forStatus(
-                  quote.status,
-                  label: quote.statusLabel.isEmpty ? null : quote.statusLabel,
-                ),
-              ),
-              TextButton.icon(
-                onPressed: onPdf,
-                style: TextButton.styleFrom(
-                  visualDensity: VisualDensity.compact,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                ),
-                icon: const Icon(Icons.picture_as_pdf_outlined, size: 18),
-                label: const Text('PDF'),
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: StatusBadge.forStatus(
+              quote.status,
+              label: quote.statusLabel.isEmpty ? null : quote.statusLabel,
+            ),
           ),
         ],
       ),

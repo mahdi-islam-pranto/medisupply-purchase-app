@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/network/api_exception.dart';
-import '../../../core/session/session_controller.dart';
 import '../../../core/widgets/money_tile.dart';
 import '../../../core/widgets/screen_header.dart';
 import '../../../core/widgets/skeleton.dart';
@@ -62,17 +61,16 @@ class HomeScreen extends ConsumerWidget {
 }
 
 /// Header + centered content, for loading and error states.
-class _HomeShell extends ConsumerWidget {
+class _HomeShell extends StatelessWidget {
   const _HomeShell({required this.child});
   final Widget child;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final name = ref.watch(sessionProvider.select((s) => s.store?.name));
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ScreenHeader(title: 'Home', subtitle: name),
+        const ScreenHeader(title: 'Home'),
         Expanded(child: child),
       ],
     );
@@ -88,10 +86,6 @@ class _HomeContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context).textTheme;
-    final subtitle = [
-      data.store?.name,
-      data.dateLabel,
-    ].where((s) => s != null && s.isNotEmpty).join(' · ');
 
     return RefreshIndicator(
       onRefresh: onRefresh,
@@ -99,7 +93,7 @@ class _HomeContent extends ConsumerWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.only(bottom: 24),
         children: [
-          ScreenHeader(title: 'Home', subtitle: subtitle),
+          const ScreenHeader(title: 'Home'),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(

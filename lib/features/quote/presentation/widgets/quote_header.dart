@@ -12,12 +12,10 @@ class QuoteOpenHeader extends StatelessWidget {
   const QuoteOpenHeader({
     super.key,
     required this.data,
-    required this.storeName,
     required this.onWindowChanged,
   });
 
   final QuoteData data;
-  final String? storeName;
   final VoidCallback onWindowChanged;
 
   @override
@@ -39,12 +37,6 @@ class QuoteOpenHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (storeName != null && storeName!.isNotEmpty)
-                  Text(
-                    storeName!,
-                    style: theme.bodyMedium?.copyWith(color: whiteSoft),
-                  ),
-                const SizedBox(height: 2),
                 Text(
                   'Products to quote',
                   style: theme.headlineMedium?.copyWith(

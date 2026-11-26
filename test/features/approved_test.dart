@@ -1,8 +1,5 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:purchase_app/core/network/api_client.dart';
 import 'package:purchase_app/features/approved/data/approved_models.dart';
-import 'package:purchase_app/features/approved/data/approved_repository.dart';
 
 void main() {
   test('parses /approved day', () {
@@ -55,13 +52,5 @@ void main() {
     expect(r.amount, 742150);
     expect(r.days.single.total, 63925);
     expect(r.lastPage, 2);
-  });
-
-  test('PDF link carries date and store_key', () {
-    final api = ApiClient(Dio(), readKey: () => 'KEY+/=');
-    final uri = ApprovedRepository(api).pdfUrl('2026-11-19');
-    expect(uri.path, endsWith('/api/store-app/approved/pdf'));
-    expect(uri.queryParameters['date'], '2026-11-19');
-    expect(uri.queryParameters['store_key'], 'KEY+/=');
   });
 }

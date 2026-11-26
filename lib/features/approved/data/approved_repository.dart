@@ -48,6 +48,4 @@ class ApprovedRepository {
     return res.data;
   }
 
-  /// PDF of one day's approved quotes (opened outside the app).
-  Uri pdfUrl(String date) => _api.authedUrl('/approved/pdf', {'date': date});
 }

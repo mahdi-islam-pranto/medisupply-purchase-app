@@ -120,7 +120,6 @@ class _ApprovedDayScreenState extends ConsumerState<ApprovedDayScreen> {
         children: [
           ScreenHeader(
             title: 'Approved quotes',
-            subtitle: storeName,
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
           ),
           Expanded(child: content),

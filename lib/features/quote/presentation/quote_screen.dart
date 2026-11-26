@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_exception.dart';
-import '../../../core/session/session_controller.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_buttons.dart';
 import '../../../core/widgets/screen_header.dart';
@@ -111,7 +110,6 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
   @override
   Widget build(BuildContext context) {
     final async = ref.watch(quoteProvider);
-    final storeName = ref.watch(sessionProvider.select((s) => s.store?.name));
 
     ref.listen(quoteProvider, (prev, next) {
       // Failed refresh with data on screen → snackbar.
@@ -139,14 +137,12 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
       if (!data.window.open) {
         return QuoteClosedView(
           data: data,
-          storeName: storeName,
           onRefresh: _refresh,
           onWindowChanged: _onWindowChanged,
         );
       }
       return _OpenView(
         data: data,
-        storeName: storeName,
         onRefresh: _refresh,
         onSend: _send,
         onWindowChanged: _onWindowChanged,
@@ -159,7 +155,7 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ScreenHeader(title: 'Products to quote', subtitle: storeName),
+          const ScreenHeader(title: 'Products to quote'),
           Expanded(
             child: async.hasError
                 ? ErrorView(
@@ -178,7 +174,6 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
 class _OpenView extends ConsumerWidget {
   const _OpenView({
     required this.data,
-    required this.storeName,
     required this.onRefresh,
     required this.onSend,
     required this.onWindowChanged,
@@ -186,7 +181,6 @@ class _OpenView extends ConsumerWidget {
   });
 
   final QuoteData data;
-  final String? storeName;
   final Future<void> Function() onRefresh;
   final VoidCallback onSend;
   final VoidCallback onWindowChanged;
@@ -221,7 +215,6 @@ class _OpenView extends ConsumerWidget {
         children: [
           QuoteOpenHeader(
             data: data,
-            storeName: storeName,
             onWindowChanged: onWindowChanged,
           ),
           Expanded(

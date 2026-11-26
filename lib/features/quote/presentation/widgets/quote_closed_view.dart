@@ -14,13 +14,11 @@ class QuoteClosedView extends StatelessWidget {
   const QuoteClosedView({
     super.key,
     required this.data,
-    required this.storeName,
     required this.onRefresh,
     required this.onWindowChanged,
   });
 
   final QuoteData data;
-  final String? storeName;
   final Future<void> Function() onRefresh;
   final VoidCallback onWindowChanged;
 
@@ -51,7 +49,7 @@ class QuoteClosedView extends StatelessWidget {
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.only(bottom: 24),
                 children: [
-                  ScreenHeader(title: 'Products to quote', subtitle: storeName),
+                  const ScreenHeader(title: 'Products to quote'),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(

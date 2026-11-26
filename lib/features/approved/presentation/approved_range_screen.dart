@@ -3,14 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
-import '../../../core/utils/pdf_launcher.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/load_more_footer.dart';
 import '../../../core/widgets/screen_header.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../../core/widgets/status_badge.dart';
 import '../data/approved_models.dart';
-import '../data/approved_repository.dart';
 import '../providers/approved_providers.dart';
 import 'widgets/approved_items.dart';
 
@@ -162,13 +160,7 @@ class _ApprovedRangeScreenState extends ConsumerState<ApprovedRangeScreen> {
               final day = days.items[i - 2];
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: _DayCard(
-                  day: day,
-                  onPdf: () => openPdf(
-                    context,
-                    ref.read(approvedRepositoryProvider).pdfUrl(day.date),
-                  ),
-                ),
+                child: _DayCard(day: day),
               );
             },
           ),
@@ -248,9 +240,8 @@ class _SummaryCard extends StatelessWidget {
 
 /// One approved day; tap to show its products.
 class _DayCard extends StatefulWidget {
-  const _DayCard({required this.day, required this.onPdf});
+  const _DayCard({required this.day});
   final ApprovedDay day;
-  final VoidCallback onPdf;
 
   @override
   State<_DayCard> createState() => _DayCardState();
@@ -300,14 +291,6 @@ class _DayCardState extends State<_DayCard> {
                         ),
                       ],
                     ),
-                  ),
-                  TextButton.icon(
-                    onPressed: widget.onPdf,
-                    style: TextButton.styleFrom(
-                      visualDensity: VisualDensity.compact,
-                    ),
-                    icon: const Icon(Icons.picture_as_pdf_outlined, size: 18),
-                    label: const Text('PDF'),
                   ),
                   if (day.items.isNotEmpty)
                     Icon(

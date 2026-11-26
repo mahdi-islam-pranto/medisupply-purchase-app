@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_exception.dart';
-import '../../../core/session/session_controller.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_buttons.dart';
 import '../../../core/widgets/app_card.dart';
@@ -31,7 +30,6 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(profileProvider);
-    final storeName = ref.watch(sessionProvider.select((s) => s.store?.name));
 
     ref.listen(profileProvider, (prev, next) {
       if (next.hasError && next.hasValue && !next.isLoading) {
@@ -39,7 +37,7 @@ class ProfileScreen extends ConsumerWidget {
       }
     });
 
-    final header = ScreenHeader(title: 'Profile', subtitle: storeName);
+    const header = ScreenHeader(title: 'Profile');
     final logout = SecondaryButton(
       label: 'Log out',
       icon: Icons.logout_rounded,
