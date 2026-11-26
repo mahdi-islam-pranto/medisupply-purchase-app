@@ -1,4 +1,4 @@
-package com.example.purchase_app
+package com.medisupplybd.purchase
 
 import io.flutter.embedding.android.FlutterActivity
 

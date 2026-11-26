@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/session/session_controller.dart';
+import '../features/approved/presentation/approved_day_screen.dart';
+import '../features/approved/presentation/approved_range_screen.dart';
 import '../features/auth/presentation/sign_in_screen.dart';
 import '../features/auth/presentation/splash_screen.dart';
 import '../features/history/presentation/history_screen.dart';
@@ -54,7 +56,26 @@ final routerProvider = Provider<GoRouter>((ref) {
         branches: [
           _tab(Routes.home, const HomeScreen()),
           _tab(Routes.quote, const QuoteScreen()),
-          _tab(Routes.history, const HistoryScreen()),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.history,
+                builder: (context, state) => const HistoryScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'approved',
+                    builder: (context, state) => ApprovedDayScreen(
+                      date: state.uri.queryParameters['date'],
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'approved-range',
+                    builder: (context, state) => const ApprovedRangeScreen(),
+                  ),
+                ],
+              ),
+            ],
+          ),
           _tab(Routes.reports, const ReportsScreen()),
           _tab(Routes.profile, const ProfileScreen()),
         ],

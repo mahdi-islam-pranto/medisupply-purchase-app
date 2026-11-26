@@ -1,13 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/network/connectivity.dart';
 import '../core/theme/app_colors.dart';
+import '../features/home/providers/home_provider.dart';
+import '../features/profile/providers/profile_provider.dart';
+import '../features/quote/providers/quote_providers.dart';
+import '../features/reports/providers/reports_providers.dart';
 
 /// Scaffold with the bottom navigation: Home · Quote · History · Reports · Profile.
-class AppShell extends StatelessWidget {
+/// Also shows an offline banner and refreshes live data (the quote window
+/// may have opened or closed) when the app returns to the foreground.
+class AppShell extends ConsumerStatefulWidget {
   const AppShell({super.key, required this.shell});
 
   final StatefulNavigationShell shell;
+
+  @override
+  ConsumerState<AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends ConsumerState<AppShell> {
+  /// Shorter trips away (e.g. a quick look at the calculator) keep the data.
+  static const _staleAfter = Duration(seconds: 30);
+
+  late final AppLifecycleListener _lifecycle;
+  DateTime? _hiddenAt;
+
+  StatefulNavigationShell get shell => widget.shell;
 
   static const _tabs = [
     _TabItem('Home', Icons.home_outlined, Icons.home_rounded),
@@ -17,6 +38,39 @@ class AppShell extends StatelessWidget {
     _TabItem('Profile', Icons.person_outline_rounded, Icons.person_rounded),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _lifecycle = AppLifecycleListener(
+      onHide: () => _hiddenAt ??= DateTime.now(),
+      onShow: () {
+        final hiddenAt = _hiddenAt;
+        _hiddenAt = null;
+        if (hiddenAt != null &&
+            DateTime.now().difference(hiddenAt) >= _staleAfter) {
+          _refreshLiveData();
+        }
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _lifecycle.dispose();
+    super.dispose();
+  }
+
+  /// Reloads screens whose numbers depend on the time of day. Screens keep
+  /// showing the old data while the new data loads; typed quote prices are
+  /// kept separately and survive. History is left alone so its scroll
+  /// position and loaded pages are not lost.
+  void _refreshLiveData() {
+    ref.invalidate(homeProvider);
+    ref.invalidate(quoteProvider);
+    ref.invalidate(reportProvider);
+    ref.invalidate(profileProvider);
+  }
+
   void _onTap(int index) {
     // Tapping the current tab again goes back to its first screen.
     shell.goBranch(index, initialLocation: index == shell.currentIndex);
@@ -24,13 +78,69 @@ class AppShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final online = ref.watch(onlineProvider).value ?? true;
+
+    // Back online: fetch fresh data (failed screens recover on their own).
+    ref.listen(onlineProvider, (prev, next) {
+      if (prev?.value == false && next.value == true) _refreshLiveData();
+    });
+
     return Scaffold(
       body: shell,
-      bottomNavigationBar: _BottomNav(
-        items: _tabs,
-        currentIndex: shell.currentIndex,
-        onTap: _onTap,
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _OfflineBanner(visible: !online),
+          _BottomNav(
+            items: _tabs,
+            currentIndex: shell.currentIndex,
+            onTap: _onTap,
+          ),
+        ],
       ),
+    );
+  }
+}
+
+/// Slim dark strip above the bottom navigation while the phone is offline.
+class _OfflineBanner extends StatelessWidget {
+  const _OfflineBanner({required this.visible});
+  final bool visible;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 200),
+      child: !visible
+          ? const SizedBox(width: double.infinity)
+          : Semantics(
+              liveRegion: true,
+              child: Container(
+                width: double.infinity,
+                color: AppColors.text,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.wifi_off_rounded,
+                      size: 18,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'You are offline. Showing the last loaded data.',
+                        style: Theme.of(context).textTheme.bodyMedium
+                            ?.copyWith(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
     );
   }
 }

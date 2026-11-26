@@ -66,7 +66,7 @@ lib/
     quote/                  # Screens 3, 4 — /quote GET + POST
     approved/               # Screen 5  — /approved, /approved/list, PDF
     history/                # Screen 6  — /history
-    reports/                # Screen 7  — /reports, PDF
+    reports/                # Screen 7  — /reports, image download
     profile/                # Screen 8  — /profile, /change-pin, logout
   router/                   # go_router config + shell with bottom nav
 ```
@@ -147,7 +147,9 @@ The main screen of the app.
 
 **Check:** send quotes, see badges flip to Done, edit and resend, see the closed view outside the window.
 
-## Phase 5 — Approved quotes & History (Screens 5 & 6)
+## Phase 5 — Approved quotes & History (Screens 5 & 6) ✅ Done
+
+> Notes: routes `/history/approved?date=` and `/history/approved-range`. PDFs open in the phone's browser / PDF viewer via a link that includes `store_key` (as the API is designed). Home's "Last quote" card now opens Approved quotes for that date.
 
 - **History (tab):** `GET /history` with infinite scroll (page / last_page), pull-to-refresh. Each card: date, "5 of 8 approved · ৳63,925" (`৳—` when 0), status badge (Pending / Approved / Partly approved / Rejected), "PDF" link → open `pdf_url`. Tap a card → Approved quotes for that date.
 - **Approved quotes:** `GET /approved?date=`. "5 of 8 approved" chip, item rows (name, `৳620 × 40`, line total), Total row, "3 quotes were not approved today.", `bill_no` when present, "Download PDF" button.
@@ -156,18 +158,22 @@ The main screen of the app.
 
 **Check:** history matches the panel, PDFs open, date filter returns the right days.
 
-## Phase 6 — Reports (Screen 7)
+## Phase 6 — Reports (Screen 7) ✅ Done
+
+> Notes: each period's report is cached while the app runs, so switching Daily / Weekly / Monthly is instant after the first load; pull-to-refresh reloads the visible period. The selected period resets to Daily when a different store signs in. No PDF: "Download Report" saves the report (store, period, range, tiles, full table, generated time) as an image to the Gallery ("Store Quote" album), like "Download Orders" on Approved quotes.
 
 - Segmented control: Daily · Weekly · Monthly → `GET /reports?period=`.
 - Subtitle from `range_label`, title "Sales & collection".
 - Summary tiles: Sales / Received / Due.
 - Table: Date · Sale · Received (green) · Due (red, or green when 0).
-- "Download report PDF" → `/reports/pdf?period=…`.
+- "Download Report" → save the report as an image to the Gallery (no PDF).
 - Remember the selected period while switching tabs.
 
 **Check:** totals match the panel for all three periods.
 
-## Phase 7 — Profile (Screen 8)
+## Phase 7 — Profile (Screen 8) ✅ Done
+
+> Notes: Change PIN also blocks a new PIN equal to the current one. PIN fields keep the same keyboard as sign-in (PINs may contain letters). Log out stays visible even when the profile fails to load. Loading `/profile` refreshes the cached store name.
 
 - `GET /profile`: info card with Phone, Quote window (`opens_at – closes_at`), App PIN → "Change PIN".
 - Notifications list (title, body, `time_ago`) with an icon per `type` (quote_reviewed, window, payment); empty state.
@@ -176,7 +182,9 @@ The main screen of the app.
 
 **Check:** change PIN and sign in with the new one; logout clears the session.
 
-## Phase 8 — Polish & release
+## Phase 8 — Polish & release ✅ Done
+
+> Notes: the app is now named **Medi Purchase** (icon label, sign-in title, Gallery album) with app id **`com.medisupplybd.purchase`** (Android + iOS). Launcher icon and launch screen come from `assets/images/lon_icon.jpg` (generated PNGs in `assets/icon/`). The offline banner sits above the bottom nav; after 30 s+ in the background (or on reconnecting) Home, Quote, Reports and Profile reload — History keeps its loaded pages. Release signing reads `android/key.properties`; see `docs/RELEASE.md`. Price / Qty already used number keyboards; PIN keeps the text keyboard.
 
 - Loading skeletons, consistent empty and error states with "Try again".
 - Offline banner; refresh data when the app comes back to the foreground (the window may have opened or closed).

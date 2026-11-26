@@ -125,7 +125,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     const Center(child: AppLogo(size: 150)),
                     const SizedBox(height: 12),
                     Text(
-                      'Store Quote',
+                      'Medi Purchase',
                       textAlign: TextAlign.center,
                       style: theme.headlineMedium,
                     ),

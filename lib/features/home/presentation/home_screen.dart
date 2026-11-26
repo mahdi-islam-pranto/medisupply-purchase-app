@@ -6,6 +6,7 @@ import '../../../core/network/api_exception.dart';
 import '../../../core/session/session_controller.dart';
 import '../../../core/widgets/money_tile.dart';
 import '../../../core/widgets/screen_header.dart';
+import '../../../core/widgets/skeleton.dart';
 import '../../../core/widgets/snackbars.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../../router/routes.dart';
@@ -53,7 +54,7 @@ class HomeScreen extends ConsumerWidget {
         ),
       );
     } else {
-      body = const _HomeShell(child: LoadingView());
+      body = const _HomeShell(child: SkeletonList(blocks: SkeletonList.home));
     }
 
     return SafeArea(bottom: false, child: body);
@@ -130,8 +131,8 @@ class _HomeContent extends ConsumerWidget {
                   const SizedBox(height: 12),
                   LastQuoteCard(
                     quote: data.lastQuote!,
-                    // Phase 5 opens the Approved quotes screen for this date.
-                    onTap: () => context.go(Routes.history),
+                    onTap: () =>
+                        context.go(Routes.approvedFor(data.lastQuote!.date)),
                   ),
                 ],
               ],

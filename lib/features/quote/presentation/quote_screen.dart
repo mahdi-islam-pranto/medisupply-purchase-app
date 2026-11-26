@@ -7,6 +7,7 @@ import '../../../core/session/session_controller.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_buttons.dart';
 import '../../../core/widgets/screen_header.dart';
+import '../../../core/widgets/skeleton.dart';
 import '../../../core/widgets/snackbars.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../home/providers/home_provider.dart';
@@ -165,7 +166,7 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                     error: async.error!,
                     onRetry: () => ref.invalidate(quoteProvider),
                   )
-                : const LoadingView(),
+                : const SkeletonList(blocks: SkeletonList.cards),
           ),
         ],
       ),
